@@ -8,7 +8,7 @@ function verificarToken(req, res, next) {
     }
 
     try {
-        const decoded = jwt.verify(token, 'segredo')
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
         req.usuario = decoded
         next()
     } catch {

@@ -27,7 +27,7 @@ router.post('/login', async (req, res) => {
             return res.send('Senha incorreta.')
     }
 
-    const token = jwt.sign({ id: usuario.id }, 'segredo', { expiresIn: '1d' })
+    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, { expiresIn: '1d' })
     res.send(({ token }))
 })
 
