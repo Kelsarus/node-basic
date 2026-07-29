@@ -2,3 +2,4 @@ node_modules
 animes.db
 .env
 dist
+/src/generated/prisma

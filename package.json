@@ -13,6 +13,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.9.1",
+    "@prisma/client": "^7.9.1",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.10.0",
     "dotenv": "^17.4.2",
@@ -26,6 +28,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.1.2",
+    "prisma": "^7.9.1",
     "typescript": "^7.0.2"
   }
 }

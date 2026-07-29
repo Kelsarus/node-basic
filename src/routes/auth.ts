@@ -1,15 +1,9 @@
-import db from '../database'
+import prisma from '../prisma'
 import express, { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 const router = express.Router()
-
-type Usuario  = {
-    id: number
-    email: string
-    senha: string
-}
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -31,8 +25,9 @@ router.post('/registro', async (req: Request, res: Response) => {
     }
     try {
         const senhaCriptografada = await bcrypt.hash(senha, 10)
-        const stmt =  db.prepare('INSERT INTO usuarios (email, senha) VALUES (?, ?)')
-        stmt.run(email, senhaCriptografada)
+        await prisma.usuario.create({
+            data: { email, senha: senhaCriptografada}
+        })
         res.send('Email registrado!')
     }
     catch {
@@ -42,8 +37,9 @@ router.post('/registro', async (req: Request, res: Response) => {
 
 router.post('/login', async (req: Request, res: Response) => {
     const { email, senha } = req.body
-    const stmt = db.prepare('SELECT * FROM usuarios WHERE email = ?')
-    const usuario = stmt.get(email) as Usuario
+    const usuario = await prisma.usuario.findUnique({
+        where: { email }
+    })
 
     if (!usuario) {
         return res.send('Email não encontrado.')

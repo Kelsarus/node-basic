@@ -1,33 +1,36 @@
-import db from '../database'
+import prisma from '../prisma'
 import express, { Router, Request, Response } from 'express'
 import verificarToken from '../middleware/verificarToken'
 const router = express.Router()
 
-router.post('/anime', verificarToken, (req: Request, res: Response) => {
+router.post('/anime', verificarToken, async (req: Request, res: Response) => {
     const { nome, episodios } =  req.body
-    const stmt = db.prepare('INSERT INTO animes (nome, episodios) VALUES (?, ?)')
-    stmt.run(nome, episodios)
+    await prisma.anime.create({
+        data: { nome, episodios }
+    })
     res.send('Anime cadastrado com sucesso.')
 })
 
-router.get('/procurar', verificarToken, (req: Request, res: Response) => { 
-    const stmt = db.prepare('SELECT * FROM animes')
-    const animes = stmt.all()
+router.get('/procurar', verificarToken, async (req: Request, res: Response) => { 
+    const animes = await prisma.anime.findMany()
     res.send(animes)
 })
 
-router.delete('/deletar/:indice', verificarToken, (req: Request, res: Response) => {
+router.delete('/deletar/:indice', verificarToken, async (req: Request, res: Response) => {
     const indice = req.params.indice
-    const stmt = db.prepare('DELETE FROM animes WHERE id = ?')
-    stmt.run(indice)
+    await prisma.anime.delete({
+        where: { id: Number(indice)}
+    })
     res.send('Anime deletado')
 })
 
-router.put('/atualizar/:indice', verificarToken, (req: Request, res: Response) => {
+router.put('/atualizar/:indice', verificarToken, async (req: Request, res: Response) => {
     const indice = req.params.indice
     const { nome, episodios } = req.body
-    const stmt = db.prepare('UPDATE animes SET nome = ?, episodios = ? WHERE id = ?')
-    stmt.run(nome, episodios, indice)
+    await prisma.anime.update({
+        where: { id: Number(indice)},
+        data: { nome, episodios }
+    })
     res.send('Anime atualizado.')
 })
 
