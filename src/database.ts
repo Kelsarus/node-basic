@@ -1,4 +1,4 @@
-const Database = require('better-sqlite3')
+import Database from 'better-sqlite3'
 
 const db = new Database('animes.db')
 
@@ -19,4 +19,4 @@ db.exec(`
 
 console.log('Banco de dados conectado!')
 
-module.exports = db
+export default db

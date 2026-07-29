@@ -1,16 +1,28 @@
-const db = require('../database')
-const express = require('express')
+import db from '../database'
+import express, { Request, Response } from 'express'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { z } from 'zod'
 const router = express.Router()
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const { z } = require('zod')
+
+type Usuario  = {
+    id: number
+    email: string
+    senha: string
+}
+
+const JWT_SECRET = process.env.JWT_SECRET
+
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET não está definido no .env')
+}
 
 const registroSchema = z.object({
     email: z.string().email(),
     senha: z.string().min(6)
 })
 
-router.post('/registro', async (req, res) => {
+router.post('/registro', async (req: Request, res: Response) => {
     const { email, senha } =  req.body
     const resultado = registroSchema.safeParse(req.body)
 
@@ -28,10 +40,10 @@ router.post('/registro', async (req, res) => {
     }
 })
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
     const { email, senha } = req.body
     const stmt = db.prepare('SELECT * FROM usuarios WHERE email = ?')
-    const usuario = stmt.get(email)
+    const usuario = stmt.get(email) as Usuario
 
     if (!usuario) {
         return res.send('Email não encontrado.')
@@ -42,8 +54,8 @@ router.post('/login', async (req, res) => {
             return res.send('Senha incorreta.')
     }
 
-    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    const token = jwt.sign({ id: usuario.id }, JWT_SECRET, { expiresIn: '1d' })
     res.send(({ token }))
 })
 
-module.exports = router
+export default router

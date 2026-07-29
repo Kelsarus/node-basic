@@ -1,9 +1,10 @@
-require('dotenv').config()
-const express = require('express')
-const auth = require('./routes/auth')
+import dotenv from 'dotenv'
+dotenv.config()
+import express from 'express'
+import auth from './routes/auth'
+import animesRoutes from './routes/animes'
 
 const app = express()
-const animesRoutes = require('./routes/animes')
 
 app.use(express.json())
 app.use(animesRoutes)
